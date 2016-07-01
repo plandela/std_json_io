@@ -18,12 +18,20 @@ defmodule StdJsonIo.Worker do
       {:error, reason} -> {:error, reason}
       {:ok, json} ->
         Proc.send_input(state.js_proc, json)
-        receive do
-          {_js_pid, :data, :out, msg} ->
-            {:reply, {:ok, msg}, state}
-          response ->
-            {:reply, {:error, response}, state}
+        do_receive(state)
+    end
+  end
+
+  defp do_receive(already_read \\ "", state) do
+    receive do
+      {_js_pid, :data, :out, msg} ->
+        case String.last(msg) do
+          "\n" -> {:reply, {:ok, already_read <> msg}, state}
+          _ ->
+            do_receive(already_read <> msg, state)
         end
+      response ->
+        {:reply, {:error, response}, state}
     end
   end
 
