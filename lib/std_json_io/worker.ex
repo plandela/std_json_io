@@ -22,6 +22,8 @@ defmodule StdJsonIo.Worker do
     end
   end
 
+  def handle_call(:stop, _from, state), do: {:stop, :normal, :ok, state}
+
   defp do_receive(already_read \\ "", state) do
     receive do
       {_js_pid, :data, :out, msg} ->
@@ -35,14 +37,12 @@ defmodule StdJsonIo.Worker do
     end
   end
 
-  def handle_call(:stop, _from, state), do: {:stop, :normal, :ok, state}
-
   # The js server has stopped
-  def handle_info({_js_pid, :result, %Result{err: _, status: _status}}, state) do
+  def handle_info({_js_pid, :result, %Result{err: _, status: _status}} = _msg, state) do
     {:stop, :normal, state}
   end
 
-  def terminate(_reason, %{js_proc: server}) do
+  def terminate(_reason, %{js_proc: server} = _state) do
     Proc.signal(server, :kill)
     Proc.stop(server)
     :ok

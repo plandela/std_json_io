@@ -31,17 +31,20 @@ defmodule StdJsonIo do
 
         files = Keyword.get(@options, :watch_files)
 
-        if files && length(files) > 0 do
-          Application.ensure_started(:fs, :permanent)
+        children =
+          if files && length(files) > 0 do
+            Application.ensure_started(:fs, :permanent)
 
-          reloader_spec = worker(
-            StdJsonIo.Reloader,
-            [__MODULE__, Enum.map(files, &Path.expand/1)],
-            []
-          )
+            reloader_spec = worker(
+              StdJsonIo.Reloader,
+              [__MODULE__, Enum.map(files, &Path.expand/1)],
+              []
+            )
 
-          children = [reloader_spec | children]
-        end
+            [reloader_spec | children]
+          else
+            children
+          end
 
         supervise(children, strategy: :one_for_one, name: __MODULE__)
       end

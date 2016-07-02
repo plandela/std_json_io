@@ -44,13 +44,4 @@ defmodule StdJsonIo.Mixfile do
       {:fs, "~> 0.9.1"},
     ]
   end
-
-  defp package do
-    [
-      maintainers: @maintainers,
-      licenses: ["MIT"],
-      links: %{github: @url},
-      files: ~w(lib) ++ ~w(CHANGELOG.md LICENSE mix.exs README.md)
-    ]
-  end
 end
