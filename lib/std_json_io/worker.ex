@@ -24,13 +24,13 @@ defmodule StdJsonIo.Worker do
 
   def handle_call(:stop, _from, state), do: {:stop, :normal, :ok, state}
 
-  defp do_receive(already_read \\ "", state) do
+  defp do_receive(already_read \\ [], state) do
     receive do
       {_js_pid, :data, :out, msg} ->
-        case String.last(msg) do
-          "\n" -> {:reply, {:ok, already_read <> msg}, state}
+        case String.ends_with?(msg, "\n") do
+          true -> {:reply, {:ok, [msg | already_read] |> Enum.reverse }, state}
           _ ->
-            do_receive(already_read <> msg, state)
+            do_receive([msg | already_read], state)
         end
       response ->
         {:reply, {:error, response}, state}
