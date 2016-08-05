@@ -32,6 +32,9 @@ defmodule StdJsonIo.Worker do
           _ ->
             do_receive([msg | already_read], state)
         end
+      { :EXIT, _pid, :shutdown } = response ->
+        terminate(:EXIT, state)
+        {:reply, {:error, response}, state}
       response ->
         {:reply, {:error, response}, state}
     end
