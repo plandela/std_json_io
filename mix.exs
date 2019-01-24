@@ -6,19 +6,21 @@ defmodule StdJsonIo.Mixfile do
   @maintainers ["Daniel Neighman"]
 
   def project do
-    [app: :std_json_io,
-     name: "StdJsonIo",
-     version: @version,
-     package: package(),
-     elixir: "~> 1.1",
-     source_url: @url,
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     maintainers: @maintainers,
-     description: "Application for managing and communicating with IO servers via JSON",
-     homepage_url: @url,
-     docs: docs(),
-     deps: deps()]
+    [
+      app: :std_json_io,
+      name: "StdJsonIo",
+      version: @version,
+      package: package(),
+      elixir: "~> 1.1",
+      source_url: @url,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      maintainers: @maintainers,
+      description: "Application for managing and communicating with IO servers via JSON",
+      homepage_url: @url,
+      docs: docs(),
+      deps: deps()
+    ]
   end
 
   def application do
@@ -40,8 +42,8 @@ defmodule StdJsonIo.Mixfile do
     [
       {:porcelain, "~> 2.0"},
       {:poolboy, "~> 1.5.1"},
-      {:poison, ">= 1.5.0"},
-      {:fs, "~> 0.9.1"},
+      {:jason, "~> 1.0"},
+      {:fs, "~> 0.9.1"}
     ]
   end
 

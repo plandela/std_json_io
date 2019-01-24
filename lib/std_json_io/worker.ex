@@ -9,15 +9,19 @@ defmodule StdJsonIo.Worker do
 
   def init(script) do
     :erlang.process_flag(:trap_exit, true)
-    {:ok, %{js_proc: start_io_server(script)}}
+    {:ok, %{io_proc: start_io_server(script)}}
   end
 
   def handle_call({:json, blob}, _from, state) do
-    case Poison.encode(blob) do
-      nil -> {:error, :json_error}
-      {:error, reason} -> {:error, reason}
+    case Jason.encode(blob) do
+      nil ->
+        {:error, :json_error}
+
+      {:error, reason} ->
+        {:error, reason}
+
       {:ok, json} ->
-        Proc.send_input(state.js_proc, json)
+        Proc.send_input(state.io_proc, json)
         do_receive(state)
     end
   end
@@ -28,24 +32,28 @@ defmodule StdJsonIo.Worker do
     receive do
       {_js_pid, :data, :out, msg} ->
         case String.ends_with?(msg, "\n") do
-          true -> {:reply, {:ok, [msg | already_read] |> Enum.reverse }, state}
+          true ->
+            {:reply, {:ok, [msg | already_read] |> Enum.reverse()}, state}
+
           _ ->
             do_receive([msg | already_read], state)
         end
-      { :EXIT, _pid, :shutdown } = response ->
+
+      {:EXIT, _pid, :shutdown} = response ->
         terminate(:EXIT, state)
         {:reply, {:error, response}, state}
+
       response ->
         {:reply, {:error, response}, state}
     end
   end
 
-  # The js server has stopped
+  # The io server has stopped
   def handle_info({_js_pid, :result, %Result{err: _, status: _status}} = _msg, state) do
     {:stop, :normal, state}
   end
 
-  def terminate(_reason, %{js_proc: server} = _state) do
+  def terminate(_reason, %{io_proc: server} = _state) do
     Proc.signal(server, :kill)
     Proc.stop(server)
     :ok
