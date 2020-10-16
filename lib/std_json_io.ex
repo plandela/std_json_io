@@ -48,7 +48,7 @@ defmodule StdJsonIo do
             children
           end
 
-        supervise(children, strategy: :one_for_one, name: __MODULE__)
+        Supervisor.init(children, strategy: :one_for_one, name: __MODULE__)
       end
 
       def restart_io_workers! do
