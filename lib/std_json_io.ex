@@ -11,7 +11,7 @@ defmodule StdJsonIo do
       @pool_name Module.concat(__MODULE__, Pool)
       @options Keyword.merge(
                  unquote(opts),
-                 Application.get_env(unquote(otp_app), __MODULE__) || []
+                 Application.compile_env(unquote(otp_app), __MODULE__) || []
                )
 
       def start_link(opts \\ []) do
