@@ -62,7 +62,7 @@ config :my_app, MyApp.ReactIo,
   ]
 ```
 
-* `script` - the script to run for the IO server
+* `script` - the script to run for the IO server. Can be also `{application, rel_path}` tuple for usage in releases (relative to application dir).
 * `watch_files` - A list of files to watch for changes. When the file changes,
   kill the IO worker and restart, picking up any changes. Use only in dev.
 * `pool_size` - The size for the pool of workers - See poolboy `size`

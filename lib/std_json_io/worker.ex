@@ -62,6 +62,13 @@ defmodule StdJsonIo.Worker do
   def terminate(_reason, _state), do: :ok
 
   defp start_io_server(script) do
-    Porcelain.spawn_shell(script, in: :receive, out: {:send, self()})
+    script_path = path(script)
+    Porcelain.spawn_shell(script_path, in: :receive, out: {:send, self()})
   end
+
+  defp path({app, script}) do
+    Application.app_dir(app) |> Path.join(script) |> Path.expand()
+  end
+
+  defp path(script), do: script
 end
