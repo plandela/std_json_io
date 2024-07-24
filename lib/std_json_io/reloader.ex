@@ -6,14 +6,17 @@ defmodule StdJsonIo.Reloader do
   end
 
   def init([mod, files]) do
-    :fs.subscribe()
-    {:ok, %{files: files, mod: mod}}
+    {:ok, watcher_pid} = FileSystem.start_link(dirs: files)
+    FileSystem.subscribe(watcher_pid)
+
+    {:ok, %{files: files, mod: mod, watcher_pid: watcher_pid}}
   end
 
-  def handle_info({_, {:fs, :file_event}, {path, _}}, %{files: files, mod: mod} = state) do
+  def handle_info({:file_event, _watcher_pid, {path, _events}}, %{files: files, mod: mod} = state) do
     if Enum.member?(files, path |> to_string) do
-      mod.restart_io_workers!
+      mod.restart_io_workers!()
     end
+
     {:noreply, state}
   end
 

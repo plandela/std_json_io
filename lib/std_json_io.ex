@@ -34,8 +34,6 @@ defmodule StdJsonIo do
 
         children =
           if files && length(files) > 0 do
-            Application.ensure_started(:fs, :permanent)
-
             reloader_spec = {
               StdJsonIo.Reloader,
               [__MODULE__, Enum.map(files, &Path.expand/1)]

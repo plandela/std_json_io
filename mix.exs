@@ -25,8 +25,7 @@ defmodule StdJsonIo.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger],
-      included_applications: [:fs]
+      extra_applications: [:logger]
     ]
   end
 
@@ -43,7 +42,7 @@ defmodule StdJsonIo.Mixfile do
       {:porcelain, "~> 2.0"},
       {:poolboy, "~> 1.5.1"},
       {:jason, "~> 1.0"},
-      {:fs, "~> 6.0"}
+      {:file_system, "~> 1.0"}
     ]
   end
 
